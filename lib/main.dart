@@ -20,11 +20,77 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const PromedioPage(),
+      // Arranca directamente en el nuevo Splash Screen
+      home: const AcademicSplashScreen(),
     );
   }
 }
 
+// --- NUEVA PANTALLA DE CARGA (SPLASH SCREEN) ---
+class AcademicSplashScreen extends StatefulWidget {
+  const AcademicSplashScreen({super.key});
+
+  @override
+  State<AcademicSplashScreen> createState() => _AcademicSplashScreenState();
+}
+
+class _AcademicSplashScreenState extends State<AcademicSplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Temporizador de 3 segundos antes de navegar a la calculadora
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const PromedioPage()),
+        );
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      backgroundColor: Color(0xFF023052), // Color primario actual
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Nuevo logo de la app: Hoja de notas con check integrado
+            Icon(
+              Icons.assignment_turned_in,
+              size: 100,
+              color: Color(0xFFFFCC00), // Color secundario actual
+            ),
+            SizedBox(height: 25),
+            Text(
+              "Welcome academic Check",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+              ),
+            ),
+            SizedBox(height: 35),
+            // Indicador de carga que combina con la paleta de colores
+            SizedBox(
+              width: 40,
+              height: 40,
+              child: CircularProgressIndicator(
+                color: Color(0xFFFFCC00),
+                strokeWidth: 3.5,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// --- TU PÁGINA PRINCIPAL (LOGICA TOTALMENTE INTACTA) ---
 class PromedioPage extends StatefulWidget {
   const PromedioPage({super.key});
 
@@ -52,7 +118,7 @@ class _PromedioPageState extends State<PromedioPage> {
   final _wU2Ep = TextEditingController(text: "30");
   final _wU3Es = TextEditingController(text: "10");
   final _wU3Ep = TextEditingController(text: "25");
-  
+
   final _wTotalEs = TextEditingController(text: "20");
   final _wTotalEp = TextEditingController(text: "70");
   final _wTotalEcg = TextEditingController(text: "10");
@@ -76,7 +142,7 @@ class _PromedioPageState extends State<PromedioPage> {
       double wU2ep = double.tryParse(_wU2Ep.text) ?? 0;
       double wU3es = double.tryParse(_wU3Es.text) ?? 0;
       double wU3ep = double.tryParse(_wU3Ep.text) ?? 0;
-      
+
       double wT_Es = (double.tryParse(_wTotalEs.text) ?? 0) / 100;
       double wT_Ep = (double.tryParse(_wTotalEp.text) ?? 0) / 100;
       double wT_Ecg = (double.tryParse(_wTotalEcg.text) ?? 0) / 100;
@@ -84,14 +150,19 @@ class _PromedioPageState extends State<PromedioPage> {
       double sumaPesosEs = wU1es + wU2es + wU3es;
       double sumaPesosEp = wU1ep + wU2ep + wU3ep;
 
-      double promedioES = sumaPesosEs > 0 ? (nU1es * wU1es + nU2es * wU2es + nU3es * wU3es) / sumaPesosEs : 0;
-      double promedioEP = sumaPesosEp > 0 ? (nU1ep * wU1ep + nU2ep * wU2ep + nU3ep * wU3ep) / sumaPesosEp : 0;
+      double promedioES = sumaPesosEs > 0
+          ? (nU1es * wU1es + nU2es * wU2es + nU3es * wU3es) / sumaPesosEs
+          : 0;
+      double promedioEP = sumaPesosEp > 0
+          ? (nU1ep * wU1ep + nU2ep * wU2ep + nU3ep * wU3ep) / sumaPesosEp
+          : 0;
 
       if (promedioEP < 12.50) {
         _notaFinal = promedioEP;
         _mensaje = "Desaprobado: EP < 12.5";
       } else {
-        _notaFinal = (promedioES * wT_Es) + (promedioEP * wT_Ep) + (nEcg * wT_Ecg);
+        _notaFinal =
+            (promedioES * wT_Es) + (promedioEP * wT_Ep) + (nEcg * wT_Ecg);
         _mensaje = _notaFinal! >= 10.5 ? "¡Aprobado!" : "Desaprobado";
       }
     });
@@ -112,7 +183,10 @@ class _PromedioPageState extends State<PromedioPage> {
       backgroundColor: const Color(0xFFE1E4E6),
       appBar: AppBar(
         backgroundColor: const Color(0xFF023052),
-        title: const Text("Calculadora Académica", style: TextStyle(color: Colors.white)),
+        title: const Text(
+          "Calculadora Académica",
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -126,10 +200,21 @@ class _PromedioPageState extends State<PromedioPage> {
               child: Column(
                 children: [
                   ListTile(
-                    onTap: () => setState(() => _pesosExpandidos = !_pesosExpandidos),
-                    title: const Text("CONFIGURACIÓN DE PESOS (%)", 
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF023052))),
-                    trailing: Icon(_pesosExpandidos ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
+                    onTap: () =>
+                        setState(() => _pesosExpandidos = !_pesosExpandidos),
+                    title: const Text(
+                      "CONFIGURACIÓN DE PESOS (%)",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        color: Color(0xFF023052),
+                      ),
+                    ),
+                    trailing: Icon(
+                      _pesosExpandidos
+                          ? Icons.keyboard_arrow_up
+                          : Icons.keyboard_arrow_down,
+                    ),
                     dense: true,
                   ),
                   if (_pesosExpandidos)
@@ -143,27 +228,33 @@ class _PromedioPageState extends State<PromedioPage> {
                           const Divider(),
                           Row(
                             children: [
-                              Expanded(child: _buildSmallInput(_wTotalEs, "T. ES %")),
+                              Expanded(
+                                child: _buildSmallInput(_wTotalEs, "T. ES %"),
+                              ),
                               const SizedBox(width: 5),
-                              Expanded(child: _buildSmallInput(_wTotalEp, "T. EP %")),
+                              Expanded(
+                                child: _buildSmallInput(_wTotalEp, "T. EP %"),
+                              ),
                               const SizedBox(width: 5),
-                              Expanded(child: _buildSmallInput(_wTotalEcg, "T. ECG %")),
+                              Expanded(
+                                child: _buildSmallInput(_wTotalEcg, "T. ECG %"),
+                              ),
                             ],
-                          )
+                          ),
                         ],
                       ),
                     ),
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 10),
 
             // --- SECCIÓN DE NOTAS ---
             _buildUnidadCard("UNIDAD 1", _u1Es, "Nota ES", _u1Ep, "Nota EP"),
             _buildUnidadCard("UNIDAD 2", _u2Es, "Nota ES", _u2Ep, "Nota EP"),
             _buildUnidadCard("UNIDAD 3", _u3Es, "Nota ES", _u3Ep, "Nota EP"),
-            
+
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
@@ -198,7 +289,9 @@ class _PromedioPageState extends State<PromedioPage> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: _reset,
-                    style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 15)),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                    ),
                     child: const Text("RESET"),
                   ),
                 ),
@@ -217,26 +310,51 @@ class _PromedioPageState extends State<PromedioPage> {
                 ),
                 child: Column(
                   children: [
-                    const Text("PROMEDIO FINAL", style: TextStyle(fontWeight: FontWeight.bold)),
-                    Text(_notaFinal!.toStringAsFixed(2), 
-                      style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Color(0xFF023052))),
-                    Text(_mensaje, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    const Text(
+                      "PROMEDIO FINAL",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      _notaFinal!.toStringAsFixed(2),
+                      style: const TextStyle(
+                        fontSize: 48,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF023052),
+                      ),
+                    ),
+                    Text(
+                      _mensaje,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
-              )
-            ]
+              ),
+            ],
           ],
         ),
       ),
     );
   }
 
-  Widget _buildWeightRow(String label, TextEditingController c1, TextEditingController c2) {
+  Widget _buildWeightRow(
+    String label,
+    TextEditingController c1,
+    TextEditingController c2,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          SizedBox(width: 30, child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold))),
+          SizedBox(
+            width: 30,
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
           Expanded(child: _buildSmallInput(c1, "ES %")),
           const SizedBox(width: 10),
           Expanded(child: _buildSmallInput(c2, "EP %")),
@@ -260,7 +378,13 @@ class _PromedioPageState extends State<PromedioPage> {
     );
   }
 
-  Widget _buildUnidadCard(String titulo, TextEditingController c1, String l1, TextEditingController c2, String l2) {
+  Widget _buildUnidadCard(
+    String titulo,
+    TextEditingController c1,
+    String l1,
+    TextEditingController c2,
+    String l2,
+  ) {
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
       child: Padding(
@@ -268,15 +392,42 @@ class _PromedioPageState extends State<PromedioPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(titulo, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF023052), fontSize: 13)),
+            Text(
+              titulo,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF023052),
+                fontSize: 13,
+              ),
+            ),
             const SizedBox(height: 8),
             Row(
               children: [
-                Expanded(child: TextField(controller: c1, decoration: InputDecoration(labelText: l1, border: const OutlineInputBorder(), isDense: true), keyboardType: TextInputType.number)),
+                Expanded(
+                  child: TextField(
+                    controller: c1,
+                    decoration: InputDecoration(
+                      labelText: l1,
+                      border: const OutlineInputBorder(),
+                      isDense: true,
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
                 const SizedBox(width: 10),
-                Expanded(child: TextField(controller: c2, decoration: InputDecoration(labelText: l2, border: const OutlineInputBorder(), isDense: true), keyboardType: TextInputType.number)),
+                Expanded(
+                  child: TextField(
+                    controller: c2,
+                    decoration: InputDecoration(
+                      labelText: l2,
+                      border: const OutlineInputBorder(),
+                      isDense: true,
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
               ],
-            )
+            ),
           ],
         ),
       ),
